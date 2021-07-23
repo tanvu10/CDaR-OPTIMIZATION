@@ -973,7 +973,6 @@ for j in train_set:
                 i_list.append([k, i])
             except:
                 pass
-
     max_index = np.argmax(v_list)
     best_ilist.append(i_list[max_index])
     best_list.append(v_list[max_index])
