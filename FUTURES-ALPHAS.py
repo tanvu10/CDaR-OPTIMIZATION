@@ -1,5 +1,6 @@
 import os
-os.chdir('D:/data-vietquant/futures-alpha-rolling')
+# os.chdir('D:/data-vietquant/futures-alpha-rolling')
+os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
 
 
 import json
@@ -604,23 +605,22 @@ cov7_G = cov7_G.iloc[:,1:]
 
 
 # #max SHARPE:
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.06241379310344828)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.06448275862068965)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.059310344827586215)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.8944444444444444, 0.056206896551724145)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.8833333333333333, 0.05517241379310345)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.056206896551724145)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.861111111111111, 0.05827586206896552)
-
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.06315789473684211)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.06526315789473684)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9166666666666666, 0.06)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.8833333333333333, 0.06)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.06)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 
 # #max SHARPE/CDAR:
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.8722222222222222,0.05)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.8722222222222222,0.05)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.8722222222222222,0.05)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.8722222222222222,0.05)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.861111111111111, 0.05)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.05)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.05)
+MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889, 0.06)
+MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9277777777777777, 0.06)
+MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.06)
+MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9166666666666666, 0.06)
+MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.8833333333333333, 0.06)
+MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.06)
+MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 
 #max E(r)/CDAR:
 # MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.85,0.05)
@@ -632,13 +632,23 @@ cov7_G = cov7_G.iloc[:,1:]
 # MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.85,  0.05)
 
 #max sharpe/meandd: (good sharpe - good drawdown - not good return)
-MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889,0.05)
-MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9388888888888889, 0.05)
-MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9388888888888889, 0.05)
-MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9388888888888889, 0.05)
-MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.9388888888888889, 0.05)
-MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9055555555555556, 0.053103448275862074)
-MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8944444444444444,  0.05517241379310345)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889,0.05)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9388888888888889, 0.05)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9388888888888889, 0.05)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9388888888888889, 0.05)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.9388888888888889, 0.05)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9055555555555556, 0.053103448275862074)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8944444444444444,  0.05517241379310345)
+
+
+#max sharpe/maxdd: (good sharpe - good drawdown - not good return)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95,0.05)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.05)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.05)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.05)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.05)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9277777777777777, 0.056206896551724145)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.9388888888888889, 0.05724137931034483)
 
 #max return/meamdd:
 # MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.053103448275862074)

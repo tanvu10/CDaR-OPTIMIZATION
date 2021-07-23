@@ -1,5 +1,6 @@
 import os
-os.chdir('D:/data-vietquant/futures-alpha-rolling')
+# os.chdir('D:/data-vietquant/futures-alpha-rolling')
+os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
 
 import json
 import numpy as np
@@ -771,7 +772,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     #input to be cumulative return: y,u,z,epsilon
     cumulative = np.cumsum(dataframe, axis = 0)
     cumulative= pd.DataFrame(cumulative)
-    print(cumulative)
+    # print(cumulative)
 
     #inequality constraint
     #1st constraint: wi >=0 <=> -wi <= 0
@@ -942,7 +943,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     new_ratio3 = sr/max_drawdown
     new_ratio4 = dis_ret.mean()/mean_drawdown
     new_ratio5 = dis_ret.mean()/max_drawdown
-    return new_ratio2
+    return new_ratio
 
 
 # MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.1)
@@ -981,7 +982,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 # MDD_delta_futures(train7, 0.36, 0.16, 0.95,49.324624624624626)
 
 #filter for v3:
-ranging = np.linspace(0.05, 0.08, 30)
+ranging = np.linspace(0.06, 0.08, 20)
 alpha_range = np.linspace(0.85, 0.95, 10)
 train_set = [train1, train2, train3, train4, train5, train6, train7]
 best_list = []
