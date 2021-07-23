@@ -23,6 +23,26 @@ train5 = pd.read_csv('train5.csv',parse_dates=['datetime'])
 train6 = pd.read_csv('train6.csv',parse_dates=['datetime'])
 train7 = pd.read_csv('train7.csv',parse_dates=['datetime'])
 
+def md_calculator(booksize, weight, dataframe):
+    dis_ret = np.dot(dataframe, weight)
+    cum_ret = np.cumsum(dis_ret)
+    mdd = 0
+    X = cum_ret + booksize
+    peak = X[0]
+    ddsr = []
+    #calculate dd
+    for x in X:
+        if x > peak:
+            peak = x
+        dd = (peak - x) / booksize
+        ddsr.append(dd)
+    #setting new mdd:
+        if dd > mdd:
+            mdd = dd
+    # pd.Series(ddsr).plot()
+    # plt.show()
+    return np.mean(ddsr), np.max(ddsr)
+
 def MDD_constrained_futures(dataframe, bound_group, bound_alpha, alpha, v3):
     dataframe = dataframe.iloc[:,1:]/10**3
     # alpha = 0.95
@@ -910,15 +930,19 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 
     #weight list
     weight = solution[:9]
-
+    mean_drawdown, max_drawdown = md_calculator(10**3, weight, dataframe)
     #calculate sharpe
     dis_ret = np.dot(dataframe, weight)
     cum_ret = np.cumsum(dis_ret)
-    sr = cum_ret.mean() / cum_ret.std() * np.sqrt(252) #sharpe ratio
+    sr = dis_ret.mean() / dis_ret.std() * np.sqrt(252) #sharpe ratio
     #sharpe/cdar:
     new_ratio = sr/CDARX
-
-    return new_ratio
+    new_ratio1 = dis_ret.mean()/CDARX
+    new_ratio2 = sr/mean_drawdown
+    new_ratio3 = sr/max_drawdown
+    new_ratio4 = dis_ret.mean()/mean_drawdown
+    new_ratio5 = dis_ret.mean()/max_drawdown
+    return new_ratio2
 
 
 # MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.1)
@@ -958,7 +982,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 
 #filter for v3:
 ranging = np.linspace(0.05, 0.08, 30)
-alpha_range = [0.85,0.86,0.87,0.88,0.89,0.9 , 0.91,0.92,0.93,0.94, 0.95]
+alpha_range = np.linspace(0.85, 0.95, 10)
 train_set = [train1, train2, train3, train4, train5, train6, train7]
 best_list = []
 best_ilist =[]
@@ -980,23 +1004,4 @@ print(best_list)
 print(best_ilist)
 
 
-def md_calculator(booksize, returnSeries, dataframe):
-    dis_ret = np.dot(dataframe, returnSeries)
-    cum_ret = np.cumsum(dis_ret)
-    mdd = 0
-    X = cum_ret + booksize
-    peak = X[0]
-    ddsr = []
-    #calculate dd
-    for x in X:
-        if x > peak:
-            peak = x
-        dd = (peak - x) / booksize
-        ddsr.append(dd)
-    #setting new mdd:
-        if dd > mdd:
-            mdd = dd
-    pd.Series(ddsr).plot()
-    plt.show()
-    return print(mdd)
 

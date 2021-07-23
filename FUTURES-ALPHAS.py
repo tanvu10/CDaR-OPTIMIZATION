@@ -483,6 +483,7 @@ def cum_ret(df1, weight1, df2, weight2, df3, weight3,df4, weight4, df5, weight5,
     X = cum_ret + booksize
     peak = X[0]
     ddsr = []
+    count =0
     # calculate dd
     for x in X:
         if x > peak:
@@ -492,14 +493,16 @@ def cum_ret(df1, weight1, df2, weight2, df3, weight3,df4, weight4, df5, weight5,
         # setting new mdd:
         if dd > mdd:
             mdd = dd
-    #
+            count +=1
     # pd.Series(cum_ret).plot()
     # plt.legend([1,2,3])
     ax1 = plt.subplot(gs[0, :])
     ax2 = plt.subplot(gs[1:, :])
     ax1.plot(pd.Series(ddsr))
     ax2.plot(pd.Series(cum_ret))
-    print('25th quantile: %s, meadian: %s, 75th quantile: %s, max drawdown: %s, average drawdown: %s' %(np.quantile(ddsr, 0.25), np.quantile(ddsr, 0.5),np.quantile(ddsr, 0.75), np.max(ddsr), np.mean(ddsr)))
+    print('count: ', count)
+    print('25th quantile: %s, meadian: %s, 75th quantile: %s, 90th quantile: %s, max drawdown: %s, average drawdown: %s' %(np.quantile(ddsr, 0.25), np.quantile(ddsr, 0.5),np.quantile(ddsr, 0.75),
+                                                                                                        np.quantile(ddsr, 0.90),np.max(ddsr), np.mean(ddsr)))
     return print('sharpe =', sharpe)
 
 
@@ -519,16 +522,16 @@ def md_calculator(booksize, weight, dataframe):
     #setting new mdd:
         if dd > mdd:
             mdd = dd
-
     ax1 = plt.subplot(gs[0, :])
     ax2 = plt.subplot(gs[1:, :])
     ax1.plot(pd.Series(ddsr))
     ax2.plot(pd.Series(cum_ret))
     # plt.tight_layout()
-
     # pd.Series(ddsr).plot()
     # plt.show()
-    return print('25th quantile: %s, meadian: %s, 75th quantile: %s, max drawdown: %s, average drawdown: %s' %(np.quantile(ddsr, 0.25), np.quantile(ddsr, 0.5),np.quantile(ddsr, 0.75), np.max(ddsr), np.mean(ddsr)))
+    return print('25th quantile: %s, meadian: %s, 75th quantile: %s, 90th quantile: %s, max drawdown: %s, average drawdown: %s' %(np.quantile(ddsr, 0.25), np.quantile(ddsr, 0.5),
+                                                                                                                                  np.quantile(ddsr, 0.75),np.quantile(ddsr, 0.90),
+                                                                                                                                  np.max(ddsr), np.mean(ddsr)))
 
 
 
@@ -600,21 +603,61 @@ cov7_G = pd.read_csv('train7_covG.csv', header= None,skiprows = 1 )
 cov7_G = cov7_G.iloc[:,1:]
 
 
-h= 0.06
-a= 0.87
-MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, a, h)
-MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, a, h)
-MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, a, h)
-MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, a, h)
-MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, a, h)
-MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, a, h)
-MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, a, h)
+
+# #max SHARPE:
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.06241379310344828)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.06448275862068965)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.059310344827586215)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.8944444444444444, 0.056206896551724145)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.8833333333333333, 0.05517241379310345)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.056206896551724145)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.861111111111111, 0.05827586206896552)
+
+
+# #max SHARPE/CDAR:
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.8722222222222222,0.05)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.8722222222222222,0.05)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.8722222222222222,0.05)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.8722222222222222,0.05)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.861111111111111, 0.05)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.05)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.05)
+
+#max E(r)/CDAR:
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.85,0.05)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.85, 0.05)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.85, 0.05)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.85, 0.05)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.85, 0.05)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.05)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.85,  0.05)
+
+#max sharpe/meandd: (good sharpe - good drawdown - not good return)
+MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889,0.05)
+MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9388888888888889, 0.05)
+MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9388888888888889, 0.05)
+MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9388888888888889, 0.05)
+MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.9388888888888889, 0.05)
+MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9055555555555556, 0.053103448275862074)
+MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8944444444444444,  0.05517241379310345)
+
+#max return/meamdd:
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.053103448275862074)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9166666666666666, 0.05827586206896552)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06344827586206897)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9388888888888889, 0.05517241379310345)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.9166666666666666, 0.05)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.05)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.861111111111111,  0.05)
+
+#max return/maxdd
 
 
 trad_w1 = trad_futures(4,5,train1, 10**9,0.16,0.36,test1)
 Clayton_w1 = copula_futures(4,5, train1, 10**9, 0.16, 0.36, test1, cov1_C)
 Gaussian_w1 = copula_futures(4,5,train1, 10**9, 0.16, 0.36, test1, cov1_G)
 trad_w2 = trad_futures(4,5,train2, 10**9,0.16,0.36,test2)
+
 Clayton_w2 = copula_futures(4,5, train2, 10**9, 0.16, 0.36, test2, cov2_C)
 Gaussian_w2 = copula_futures(4,5,train2, 10**9, 0.16, 0.36, test2, cov2_G)
 
@@ -625,7 +668,6 @@ Gaussian_w3 = copula_futures(4,5,train3, 10**9, 0.16, 0.36, test3, cov3_G)
 trad_w4 = trad_futures(4,5,train4, 10**9,0.16,0.36,test4)
 Clayton_w4 = copula_futures(4,5, train4, 10**9, 0.16, 0.36, test4, cov4_C)
 Gaussian_w4 = copula_futures(4,5,train4, 10**9, 0.16, 0.36, test4, cov4_G)
-
 
 trad_w5 = trad_futures(4,5,train5, 10**9,0.16,0.36,test5)
 Clayton_w5 = copula_futures(4,5, train5, 10**9, 0.16, 0.36, test5, cov5_C)
