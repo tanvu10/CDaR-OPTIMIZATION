@@ -505,7 +505,6 @@ def cum_ret(df1, weight1, df2, weight2, df3, weight3,df4, weight4, df5, weight5,
                                                                                                         np.quantile(ddsr, 0.90),np.max(ddsr), np.mean(ddsr)))
     return print('sharpe =', sharpe)
 
-
 def md_calculator(booksize, weight, dataframe):
     dis_ret = np.dot(dataframe, weight)
     cum_ret = np.cumsum(dis_ret)
