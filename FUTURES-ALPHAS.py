@@ -604,7 +604,7 @@ cov7_G = cov7_G.iloc[:,1:]
 
 
 
-# #max SHARPE:
+# #max SHARPE: decent return - good dd - count = 9
 # MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.06315789473684211)
 # MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.06526315789473684)
 # MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.06)
@@ -613,7 +613,7 @@ cov7_G = cov7_G.iloc[:,1:]
 # MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.06)
 # MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 
-# #max SHARPE/CDAR:
+# #max SHARPE/CDAR: decent return - good dd - count = 9
 MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889, 0.06)
 MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9277777777777777, 0.06)
 MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.06)
@@ -623,43 +623,50 @@ MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.06)
 MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 
 #max E(r)/CDAR:
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.85,0.05)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.85, 0.05)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.85, 0.05)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.85, 0.05)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.85, 0.05)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.05)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.85,  0.05)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.85, 0.06)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.85, 0.06)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.85, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.85, 0.06)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.85, 0.06)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.06)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.85, 0.06)
 
 #max sharpe/meandd: (good sharpe - good drawdown - not good return)
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889,0.05)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9388888888888889, 0.05)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9388888888888889, 0.05)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9388888888888889, 0.05)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.9388888888888889, 0.05)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9055555555555556, 0.053103448275862074)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8944444444444444,  0.05517241379310345)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95,0.06)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.061052631578947365)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.06)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.06)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9388888888888889, 0.06)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.95, 0.06)
 
 
 #max sharpe/maxdd: (good sharpe - good drawdown - not good return)
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95,0.05)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.05)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.05)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.05)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.05)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9277777777777777, 0.056206896551724145)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.9388888888888889, 0.05724137931034483)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95,0.06)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.06)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.061052631578947365)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.06)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.95, 0.06)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.95, 0.06)
 
-#max return/meamdd:
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.053103448275862074)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9166666666666666, 0.05827586206896552)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06344827586206897)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9388888888888889, 0.05517241379310345)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.9166666666666666, 0.05)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.85, 0.05)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.861111111111111,  0.05)
+#max return/meamdd: (count = 8)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.06210526315789473)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.06210526315789473)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.06)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.06)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.9388888888888889, 0.06)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.9166666666666666, 0.06)
 
-#max return/maxdd
+#max return/maxdd (count = 7, mdd good, return good)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.07894736842105263)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.07684210526315789)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.061052631578947365)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.06842105263157895)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.95, 0.06842105263157895)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.95, 0.06)
 
 
 trad_w1 = trad_futures(4,5,train1, 10**9,0.16,0.36,test1)
@@ -805,9 +812,6 @@ plt.show()
 # port3 = pd.DataFrame(port3)
 # port3.index = train1.columns
 # port3
-#
-#
-#
 #
 print("WHOLE PERIOD")
 gs = gridspec.GridSpec(3, 3)
