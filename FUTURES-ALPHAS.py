@@ -1,6 +1,6 @@
 import os
-# os.chdir('D:/data-vietquant/futures-alpha-rolling')
-os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+os.chdir('D:/data-vietquant/futures-alpha-rolling')
+# os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
 
 
 import json
@@ -17,456 +17,17 @@ from tabulate import tabulate
 from datetime import datetime
 import itertools
 
-class infoTest:
-    def __init__(self):
-        pass
-    def calculateSharpe(self,npArray):
-        sr = npArray.mean()/npArray.std() * np.sqrt(252)
-        return sr
-    def max_drawdown(self,booksize,returnSeries):
-        mdd = 0
-        X = returnSeries +booksize
-        peak = X[0]
-        for x in X:
-            if x > peak:
-                peak = x
-            dd = (peak - x) / booksize
-            if dd > mdd:
-                mdd = dd
-        pd.Series(X).plot()
-        plt.show()
-        return mdd, print(X)
-        # rets is array of returns
-    def randomAllocateWeigh(self,rets):
-        remaining = 1
-        weigh = []
-        for i in range(len(rets)):
-            tempWeigh = round(random(),2)
-            weigh.append(tempWeigh)
-            remaining = remaining-tempWeigh
-        weigh = np.asarray(weigh) / np.sum(weigh)
-        # print(np.sum(weigh))
-        portfolio = []
-        for i in range(len(rets)):
-            if len(portfolio) ==0:
-                portfolio = rets[i] * weigh[i]
-            else:
-                portfolio += rets[i] * weigh[i]
-        # portfolio = np.asarray(portfolio)/np.sum(weigh)
-        return weigh,portfolio
-    def randomAllocateListReturns(self,df):
-        remaining = 1
-        weigh = []
-        counter =0
-        ret = []
-        portfolio = []
-        for (columnName, columnData) in df.iteritems():
-            tempWeigh = round(random(), 2)
-            weigh.append(tempWeigh)
-        weigh = np.asarray(weigh) / np.sum(weigh)
-        # print(np.sum(weigh))
+#import function from CDAR file
+from CDaRoptimization import MDD_constrained_futures
+from CDaRoptimization import copula_futures
+from CDaRoptimization import trad_futures
+from CDaRoptimization import infoTest
+from CDaRoptimization import cum_ret1
+
+it  = infoTest()
 
 
-        portfolio = []
-        counter = 0
-        for (columnName, columnData) in df.iteritems():
-            if len(portfolio) == 0:
-                portfolio = columnData * weigh[counter]
-            else:
-                portfolio += columnData * weigh[counter]
-            counter+=1
-        # portfolio = np.asarray(portfolio)/np.sum(weigh)
-        return weigh, portfolio
-
-
-    def allocateForMaxSharpe(self,df,itertimes):
-        maxSharpe = 0
-        maxWeigh = []
-        finalPnl = []
-        for i in range(itertimes):
-            weigh, mergePnl = self.randomAllocateListReturns(df)
-            tempSharpe = self.calculateSharpe(mergePnl)
-            if tempSharpe >= maxSharpe:
-                maxSharpe = tempSharpe
-                maxWeigh = weigh
-                finalPnl = mergePnl
-        # maxWeigh = np.asarray(maxWeigh) / np.sum(maxWeigh)
-        return maxSharpe, maxWeigh,finalPnl
-
-
-    def allocateForMinDD(self,df,itertimes,booksize):
-        minDD = 1;
-        minDDWeigh = []
-        finalPnl = []
-        for i in range(itertimes):
-            weigh, mergePnl = self.randomAllocateListReturns(df)
-            tempDD = self.max_drawdown(booksize,mergePnl)
-            if tempDD < minDD:
-                minDD = tempDD
-                minDDWeigh = weigh
-                finalPnl = mergePnl
-        return minDD, minDDWeigh,finalPnl
-
-def trad_sharpe(dataframe,rf,upperbound,test):
-    it=infoTest()
-    cov = (dataframe.cov()).to_numpy()
-    meanvec = (dataframe.mean()).to_numpy()
-    meanvec = [i - rf for i in meanvec]
-    P = matrix(cov, tc='d')
-    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
-    G=[]
-    for i in range(len(meanvec)):
-        k=[0 for x in range(len(meanvec)-1)]
-        k.insert(i, -1)
-        G.append(k)
-    for i in range(len(meanvec)):
-        k=[-upperbound for x in range(len(meanvec)-1)]
-        k.insert(i,1-upperbound)
-        G.append(k)
-    G=matrix(np.array(G))
-    H = np.zeros(2*len(meanvec))
-    h = matrix(H, tc='d')
-    A = (matrix(meanvec)).trans()
-    b = matrix([1], (1, 1), tc='d')
-    sol = ((solvers.qp(P, q, G, h, A, b))['x'])
-    solution = [x for x in sol]
-    sum = 0
-    for i in range(len(solution)):
-        sum += solution[i]
-    optimizedWeigh = [x / sum for x in solution]
-    print(cum_ret1(test,optimizedWeigh))
-    return optimizedWeigh
-
-def copula_sharpe(dataframe,upperbound,cov,rf,test):
-    it=infoTest()
-    cov = cov.to_numpy()
-    meanvec = (dataframe.std()).to_numpy()
-    #meanvec = std
-    meanvec = [i - rf for i in meanvec]
-    P = matrix(cov, tc='d')
-    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
-    G=[]
-    for i in range(len(meanvec)):
-        k=[0 for x in range(len(meanvec)-1)]
-        k.insert(i, -1)
-        G.append(k)
-    for i in range(len(meanvec)):
-        k=[-upperbound for x in range(len(meanvec)-1)]
-        k.insert(i,1-upperbound)
-        G.append(k)
-    G=matrix(np.array(G))
-    H = np.zeros(2*len(meanvec))
-    h = matrix(H, tc='d')
-    A = (matrix(meanvec)).trans()
-    b = matrix([1], (1, 1), tc='d')
-    sol = ((solvers.qp(P, q, G, h, A, b))['x'])
-    solution = [x for x in sol]
-    sum1 = 0
-    for i in range(len(solution)):
-        sum1 += solution[i]
-    optimizedWeigh = [x / sum1 for x in solution]
-
-    print(cum_ret1(test,optimizedWeigh))
-    return optimizedWeigh
-
-def copula_futures(list_group,list_normal,dataframe,booksize,upperbound, bounded_list,dataframe1,cova):
-    # print(tabulate(dataframe.corr(method='pearson'), tablefmt="pipe", headers="keys"))
-    # upperbound = 0.3
-    it = infoTest()
-    cov = (cova).to_numpy()
-    meanvec = (dataframe.mean()).to_numpy()
-    P = matrix(cov, tc='d')
-    # print(P)
-    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
-    G = []
-    for i in range(len(meanvec)):
-        k = [0 for x in range(len(meanvec) - 1)]
-        k.insert(i, -1)
-        G.append(k)
-    for i in range(len(meanvec)):
-        k = [-upperbound for x in range(len(meanvec) - 1)]
-        k.insert(i, 1 - upperbound)
-        G.append(k)
-    k = [-bounded_list for i in range((list_normal))]
-    for i in range((list_group)):
-        k.insert(i,1-bounded_list)
-    G.append(k)
-    k = [bounded_list for i in range((list_normal))]
-    for i in range((list_group)):
-        k.insert(i,  bounded_list-1)
-    G.append(k)
-    G = matrix(np.array(G))
-    H = np.zeros(2 * len(meanvec)+2)
-    h = matrix(H, tc='d')
-    A = (matrix(meanvec)).trans()
-    b = matrix([1], (1, 1), tc='d')
-    # print('G',G)
-    # print('h',h)
-    # print('A',A)
-    # print('b',b)
-    sol = (solvers.qp(P, q, G, h, A, b))['x']
-    solution = [x for x in sol]
-    sum = 0
-    for i in range(len(solution)):
-        sum += solution[i]
-    optimizedWeigh = [x / sum for x in solution]
-    print(optimizedWeigh)
-    merge = []
-    counter = 0
-    for (columnName, columnData) in dataframe1.iteritems():
-        # print(real[counter])
-        if len(merge) == 0:
-            merge = dataframe1[columnName] * optimizedWeigh[counter]
-        else:
-            merge = merge + dataframe1[columnName] * optimizedWeigh[counter]
-        counter += 1
-    # print(merge)
-    # print('dd,', it.max_drawdown(booksize=booksize, returnSeries=merge))
-    print('sharpe,', it.calculateSharpe(merge))
-    merge = merge*10
-    # print('value',merge)
-    # merge.to_csv(r'/home/hoainam/PycharmProjects/multi_strategy/v_multi/f1m.csv')
-    # print(np.cumsum(merge))
-    # plt.plot(np.cumsum(merge))
-    # plt.grid(True)
-    # plt.legend(('old', 'maxsharpe', 'minDD'))
-    # plt.show()
-    return optimizedWeigh
-
-def trad_futures(list_group,list_normal,dataframe,booksize,upperbound, bounded_list,dataframe1):
-    # print(tabulate(dataframe.corr(method='pearson'), tablefmt="pipe", headers="keys"))
-    # upperbound = 0.3
-    it = infoTest()
-    cov = (dataframe.cov()).to_numpy()
-    meanvec = (dataframe.mean()).to_numpy()
-    P = matrix(cov, tc='d')
-    # print(P)
-    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
-    G = []
-    for i in range(len(meanvec)):
-        k = [0 for x in range(len(meanvec) - 1)]
-        k.insert(i, -1)
-        G.append(k)
-    for i in range(len(meanvec)):
-        k = [-upperbound for x in range(len(meanvec) - 1)]
-        k.insert(i, 1 - upperbound)
-        G.append(k)
-    k = [-bounded_list for i in range((list_normal))]
-    for i in range((list_group)):
-        k.insert(i,1-bounded_list)
-    G.append(k)
-    k = [bounded_list for i in range((list_normal))]
-    for i in range((list_group)):
-        k.insert(i,  bounded_list-1)
-    G.append(k)
-    G = matrix(np.array(G))
-    H = np.zeros(2 * len(meanvec)+2)
-    h = matrix(H, tc='d')
-    A = (matrix(meanvec)).trans()
-    b = matrix([1], (1, 1), tc='d')
-    # print('G',G)
-    # print('h',h)
-    # print('A',A)
-    # print('b',b)
-    sol = (solvers.qp(P, q, G, h, A, b))['x']
-    solution = [x for x in sol]
-    sum = 0
-    for i in range(len(solution)):
-        sum += solution[i]
-    optimizedWeigh = [x / sum for x in solution]
-    print(optimizedWeigh)
-    merge = []
-    counter = 0
-    for (columnName, columnData) in dataframe1.iteritems():
-        # print(real[counter])
-        if len(merge) == 0:
-            merge = dataframe1[columnName] * optimizedWeigh[counter]
-        else:
-            merge = merge + dataframe1[columnName] * optimizedWeigh[counter]
-        counter += 1
-    # print(merge)
-    # print('dd,', it.max_drawdown(booksize=booksize, returnSeries=merge))
-    print('sharpe,', it.calculateSharpe(merge))
-    merge = merge*10
-    # print('value',merge)
-    # merge.to_csv(r'/home/hoainam/PycharmProjects/multi_strategy/v_multi/f1m.csv')
-    # print(np.cumsum(merge))
-    # plt.plot(np.cumsum(merge))
-    # plt.grid(True)
-    # plt.legend(('old', 'maxsharpe', 'minDD'))
-    # plt.show()
-    return optimizedWeigh
-
-def MDD_constrained_futures(dataframe, bound_group, bound_alpha, alpha, v3):
-    dataframe = dataframe.iloc[:,1:]/10**3
-    # alpha = 0.95
-    v3 = v3
-    #input to be cumulative return: y,u,z,epsilon
-    cumulative = np.cumsum(dataframe, axis = 0)
-    cumulative= pd.DataFrame(cumulative)
-    print(cumulative)
-
-    #inequality constraint
-    #1st constraint: wi >=0 <=> -wi <= 0
-    J = dataframe.shape[0] #number of row
-    N = dataframe.shape[1] #number of col
-    g11 = pd.DataFrame(np.diag(np.ones(N)))     #xk
-    g12 = pd.DataFrame(np.zeros([N,J*2+1]))     #uk, zk, epsilon
-    # print(g12)
-    G1 = pd.concat([g11, g12], axis =1, ignore_index= True)
-    G1 = -G1
-    # print(matrix(np.array(G1)))
-    h1  = pd.DataFrame(np.zeros(N).reshape(-1,1))
-    # print(h1)
-
-
-    #2nd constraint: -yk*x +uk - zk - epsilon <= 0
-    g21 =  -cumulative                      #xk
-    g22 = pd.DataFrame(np.diag(np.ones(J))) #uk
-    g23 = -pd.DataFrame(np.diag(np.ones(J))) #zk
-    g24 = - pd.DataFrame(np.ones([J,1]))    #epsilon
-    G2 = pd.concat([g21,g22,g23,g24], axis = 1, ignore_index = True)
-    # print(G2)
-    h2 = pd.DataFrame(np.zeros(J).reshape(-1,1))
-
-    #3rd constraint: zk >= 0 <=> -zk <= 0
-    g31 = pd.DataFrame(np.zeros([J,N])) #xk
-    g32 = pd.DataFrame(np.zeros([J,J])) #uk
-    g33 = pd.DataFrame(np.diag(np.ones(J)))    #zk
-    g34 = pd.DataFrame(np.zeros([J,1]))   #epsilon
-    G3 = pd.concat([g31, g32, -g33, g34], axis = 1, ignore_index = True)
-    # print(G3)
-
-    h3 = pd.DataFrame(np.zeros(J).reshape(-1,1))
-
-
-    #4th constraint: yk*x - uk <= 0
-    g41 = cumulative                        #xk
-    g42 = -pd.DataFrame(np.diag(np.ones(J))) #uk
-    g43 = pd.DataFrame(np.zeros([J,J])) #zk
-    g44 = pd.DataFrame(np.zeros([J,1])) #epsilion
-    G4 = pd.concat([g41, g42, g43, g44], axis = 1, ignore_index= True)
-    # print(G4)
-    h4 = pd.DataFrame(np.zeros(J).reshape(-1,1))
-
-    #5th constraint: uk-1  -- uk <= 0
-
-    g51 = pd.DataFrame(np.zeros([J,N])) #xk
-    g52 =[]
-    a = [0 for x in range(J-1)]
-    a.insert(0,-1)
-    g52.append(a)
-    for i in range(J-1):
-        k = [0 for x in range(J - 2)]
-        k.insert(i,-1)
-        k.insert(i,1)
-        g52.append(k)
-    g52 = pd.DataFrame(g52) #uk
-    # print(g52)
-    g53 = pd.DataFrame(np.diag(np.zeros(J))) #zk
-    g54 = pd.DataFrame(np.zeros([J,1])) #epsilon
-    G5 = pd.concat([g51, g52,g53, g54], axis = 1, ignore_index=True)
-    # print(G5)
-    h5 = pd.DataFrame(np.zeros(J).reshape(-1,1))
-
-
-    #6th constraint: wi <= 0.16
-    g61 = pd.DataFrame(np.diag(np.ones(N)))     #xk
-    g62 = pd.DataFrame(np.zeros([N,J*2+1]))     #uk, zk, epsilon
-    # print(g12)
-    G6 = pd.concat([g61, g62], axis =1, ignore_index= True)
-    h6  = [bound_alpha for x in range(N)]
-    h6 = pd.DataFrame(np.array(h6).reshape(-1,1))
-    # print(G6)
-    # print(h6)
-
-    #7th constraint: proportion v3
-
-    g71 = [0 for x in range(N+J)]
-    g72=  [1/((1-alpha)*J) for y in range(J)]
-    G7 = np.append(g71,g72)
-    G7 = np.append(G7,1)
-    G7 = G7.reshape(1,-1)
-    G7 = pd.DataFrame(G7)
-    # print(G7)
-    h7 = pd.Series(v3)
-
-
-
-    #total inequality matrix
-    G = pd.concat([G1, G2, G3, G4, G5, G6,G7], axis = 0 , ignore_index=True)
-    G = matrix(np.array(G))
-    h = pd.concat([h1, h2,h3, h4, h5, h6,h7], axis = 0,ignore_index=True)
-    h = matrix(np.array(h))
-    # print(G)
-    # print(h)
-    # breakpoint()
-
-
-    #equality constraint:
-    # total = 1
-    a11 =[1 for x in range(N)]
-    a12 = [0 for x in range(2*J+1)]
-    A1 = np.append(a11,a12).reshape(1, -1)
-    A1 = matrix(A1, tc= 'd')
-    # print(A)
-    b1 = matrix([1],(1,1), tc='d')
-    # print(b)
-
-
-    #group 1 = 0.36
-    a21 = [1 for x in range(N-5)]
-    a22 = [0 for x in range(2*J + 1+ 5)]
-    A2 = np.append(a21,a22).reshape(1, -1)
-    A2 = matrix(A2, tc= 'd')
-    b2 = matrix([bound_group], (1,1), tc='d')
-    # print(A2)
-    # print(b2)
-    #
-    A = pd.concat([pd.DataFrame(A1), pd.DataFrame(A2)], axis  =1).T
-    A = matrix(np.array(A))
-    # print(A)
-
-    b = matrix(np.array(pd.concat([pd.DataFrame(b1), pd.DataFrame(b2)], axis = 1).T))
-    # print(b)
-
-
-
-    #objective function: max return
-    c1 = (cumulative.iloc[-1,:]).to_numpy()
-    c2 = [0 for x in range(2*J+1)]
-    c = np.append(c1, c2).reshape(1,-1)
-    c = -matrix(c.T)
-    # print(c)
-
-    # #
-    # c1 = [0 for x in range(N+J)]
-    # c2=  [1/((1-alpha)*J) for y in range(J)]
-    # c = np.append(c1,c2)
-    # c = np.append(c,1)
-    # c = c.reshape(1,-1)
-    # c = pd.DataFrame(c)
-    # c = matrix(np.array(c).T)
-    # print(c)
-
-
-
-    sol = solvers.lp(c, G, h, A, b,solver ='glpk')['x']
-    # print(sol['x'])
-    # print(solution[:8])
-    solution = [x for x in sol]
-    solution = solution[:9]
-    return solution
-
-
-it = infoTest()
-
-def cum_ret1(df,weight):
-    ret = np.dot(df,weight)
-    sharpe = it.calculateSharpe(ret)
-    return sharpe
-
-#whole period cumulative return
+#MDD drawing
 def cum_ret(df1, weight1, df2, weight2, df3, weight3,df4, weight4, df5, weight5, df6, weight6,df7, weight7, booksize):
     return_1 = np.dot(df1, weight1).reshape(-1,1)
     return_2 = np.dot(df2, weight2).reshape(-1,1)
@@ -532,7 +93,6 @@ def md_calculator(booksize, weight, dataframe):
     return print('25th quantile: %s, meadian: %s, 75th quantile: %s, 90th quantile: %s, max drawdown: %s, average drawdown: %s' %(np.quantile(ddsr, 0.25), np.quantile(ddsr, 0.5),
                                                                                                                                   np.quantile(ddsr, 0.75),np.quantile(ddsr, 0.90),
                                                                                                                                   np.max(ddsr), np.mean(ddsr)))
-
 
 
 #import data:
@@ -660,13 +220,13 @@ cov7_G = cov7_G.iloc[:,1:]
 # MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.9166666666666666, 0.06)
 
 #max return/maxdd (count = 7, mdd good, return good)
-# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.07894736842105263)
-# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.07684210526315789)
-# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06)
-# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.061052631578947365)
-# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.06842105263157895)
-# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.95, 0.06842105263157895)
-# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.95, 0.06)
+MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.07894736842105263)
+MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.07684210526315789)
+MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.06)
+MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.95, 0.061052631578947365)
+MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.95, 0.06842105263157895)
+MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.95, 0.06842105263157895)
+MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.95, 0.06)
 
 
 trad_w1 = trad_futures(4,5,train1, 10**9,0.16,0.36,test1)
@@ -696,6 +256,7 @@ Gaussian_w6 = copula_futures(4,5,train6, 10**9, 0.16, 0.36, test6, cov6_G)
 trad_w7 = trad_futures(4,5,train7, 10**9,0.16,0.36,test7)
 Clayton_w7 = copula_futures(4,5, train7, 10**9, 0.16, 0.36, test7, cov7_C)
 Gaussian_w7 = copula_futures(4,5,train7, 10**9, 0.16, 0.36, test7, cov7_G)
+
 #MDD:
 print('MDD1')
 gs = gridspec.GridSpec(3, 3)
@@ -850,3 +411,13 @@ Sharpe = pd.DataFrame(Sharpe)
 print(Sharpe)
 
 
+#PERIOD 7
+port7 = {'trad': trad_w7,
+        'Clay':Clayton_w7,
+        'Gaus': Gaussian_w7,
+        'MDD' : MDDw7}
+port7 = pd.DataFrame(port7)
+port7.index = train1.columns[1:]
+print(port7)
+
+# port7.to_csv('Port_test_7.csv')

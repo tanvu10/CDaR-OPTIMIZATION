@@ -1,6 +1,6 @@
 import os
-# os.chdir('D:/data-vietquant/futures-alpha-rolling')
-os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+os.chdir('D:/data-vietquant/futures-alpha-rolling')
+# os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
 
 import json
 import numpy as np
@@ -24,7 +24,105 @@ train5 = pd.read_csv('train5.csv',parse_dates=['datetime'])
 train6 = pd.read_csv('train6.csv',parse_dates=['datetime'])
 train7 = pd.read_csv('train7.csv',parse_dates=['datetime'])
 
-def md_calculator(booksize, weight, dataframe):
+class infoTest:
+    def __init__(self):
+        pass
+    def calculateSharpe(self,npArray):
+        sr = npArray.mean()/npArray.std() * np.sqrt(252)
+        return sr
+    def max_drawdown(self,booksize,returnSeries):
+        mdd = 0
+        X = returnSeries +booksize
+        peak = X[0]
+        for x in X:
+            if x > peak:
+                peak = x
+            dd = (peak - x) / booksize
+            if dd > mdd:
+                mdd = dd
+        pd.Series(X).plot()
+        plt.show()
+        return mdd, print(X)
+        # rets is array of returns
+    def randomAllocateWeigh(self,rets):
+        remaining = 1
+        weigh = []
+        for i in range(len(rets)):
+            tempWeigh = round(random(),2)
+            weigh.append(tempWeigh)
+            remaining = remaining-tempWeigh
+        weigh = np.asarray(weigh) / np.sum(weigh)
+        # print(np.sum(weigh))
+        portfolio = []
+        for i in range(len(rets)):
+            if len(portfolio) ==0:
+                portfolio = rets[i] * weigh[i]
+            else:
+                portfolio += rets[i] * weigh[i]
+        # portfolio = np.asarray(portfolio)/np.sum(weigh)
+        return weigh,portfolio
+    def randomAllocateListReturns(self,df):
+        remaining = 1
+        weigh = []
+        counter =0
+        ret = []
+        portfolio = []
+        for (columnName, columnData) in df.iteritems():
+            tempWeigh = round(random(), 2)
+            weigh.append(tempWeigh)
+        weigh = np.asarray(weigh) / np.sum(weigh)
+        # print(np.sum(weigh))
+
+
+        portfolio = []
+        counter = 0
+        for (columnName, columnData) in df.iteritems():
+            if len(portfolio) == 0:
+                portfolio = columnData * weigh[counter]
+            else:
+                portfolio += columnData * weigh[counter]
+            counter+=1
+        # portfolio = np.asarray(portfolio)/np.sum(weigh)
+        return weigh, portfolio
+
+
+    def allocateForMaxSharpe(self,df,itertimes):
+        maxSharpe = 0
+        maxWeigh = []
+        finalPnl = []
+        for i in range(itertimes):
+            weigh, mergePnl = self.randomAllocateListReturns(df)
+            tempSharpe = self.calculateSharpe(mergePnl)
+            if tempSharpe >= maxSharpe:
+                maxSharpe = tempSharpe
+                maxWeigh = weigh
+                finalPnl = mergePnl
+        # maxWeigh = np.asarray(maxWeigh) / np.sum(maxWeigh)
+        return maxSharpe, maxWeigh,finalPnl
+
+
+    def allocateForMinDD(self,df,itertimes,booksize):
+        minDD = 1;
+        minDDWeigh = []
+        finalPnl = []
+        for i in range(itertimes):
+            weigh, mergePnl = self.randomAllocateListReturns(df)
+            tempDD = self.max_drawdown(booksize,mergePnl)
+            if tempDD < minDD:
+                minDD = tempDD
+                minDDWeigh = weigh
+                finalPnl = mergePnl
+        return minDD, minDDWeigh,finalPnl
+it = infoTest()
+
+#sharpe calculator
+def cum_ret1(df,weight):
+    ret = np.dot(df,weight)
+    sharpe = it.calculateSharpe(ret)
+    return sharpe
+
+#drawdown calculator
+def md_calculator1(booksize, weight, dataframe):
     dis_ret = np.dot(dataframe, weight)
     cum_ret = np.cumsum(dis_ret)
     mdd = 0
@@ -44,6 +142,201 @@ def md_calculator(booksize, weight, dataframe):
     # plt.show()
     return np.mean(ddsr), np.max(ddsr)
 
+#tradtional
+def trad_sharpe(dataframe,rf,upperbound,test):
+    it=infoTest()
+    cov = (dataframe.cov()).to_numpy()
+    meanvec = (dataframe.mean()).to_numpy()
+    meanvec = [i - rf for i in meanvec]
+    P = matrix(cov, tc='d')
+    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
+    G=[]
+    for i in range(len(meanvec)):
+        k=[0 for x in range(len(meanvec)-1)]
+        k.insert(i, -1)
+        G.append(k)
+    for i in range(len(meanvec)):
+        k=[-upperbound for x in range(len(meanvec)-1)]
+        k.insert(i,1-upperbound)
+        G.append(k)
+    G=matrix(np.array(G))
+    H = np.zeros(2*len(meanvec))
+    h = matrix(H, tc='d')
+    A = (matrix(meanvec)).trans()
+    b = matrix([1], (1, 1), tc='d')
+    sol = ((solvers.qp(P, q, G, h, A, b))['x'])
+    solution = [x for x in sol]
+    sum = 0
+    for i in range(len(solution)):
+        sum += solution[i]
+    optimizedWeigh = [x / sum for x in solution]
+    print(cum_ret1(test,optimizedWeigh))
+    return optimizedWeigh
+
+#traditional copula
+def trad_copula_sharpe(dataframe,upperbound,cov,rf,test):
+    it=infoTest()
+    cov = cov.to_numpy()
+    meanvec = (dataframe.std()).to_numpy()
+    #meanvec = std
+    meanvec = [i - rf for i in meanvec]
+    P = matrix(cov, tc='d')
+    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
+    G=[]
+    for i in range(len(meanvec)):
+        k=[0 for x in range(len(meanvec)-1)]
+        k.insert(i, -1)
+        G.append(k)
+    for i in range(len(meanvec)):
+        k=[-upperbound for x in range(len(meanvec)-1)]
+        k.insert(i,1-upperbound)
+        G.append(k)
+    G=matrix(np.array(G))
+    H = np.zeros(2*len(meanvec))
+    h = matrix(H, tc='d')
+    A = (matrix(meanvec)).trans()
+    b = matrix([1], (1, 1), tc='d')
+    sol = ((solvers.qp(P, q, G, h, A, b))['x'])
+    solution = [x for x in sol]
+    sum1 = 0
+    for i in range(len(solution)):
+        sum1 += solution[i]
+    optimizedWeigh = [x / sum1 for x in solution]
+
+    print(cum_ret1(test,optimizedWeigh))
+    return optimizedWeigh
+
+#copula futures
+def copula_futures(list_group,list_normal,dataframe,booksize,upperbound, bounded_list,dataframe1,cova):
+    # print(tabulate(dataframe.corr(method='pearson'), tablefmt="pipe", headers="keys"))
+    # upperbound = 0.3
+    it = infoTest()
+    cov = (cova).to_numpy()
+    meanvec = (dataframe.mean()).to_numpy()
+    P = matrix(cov, tc='d')
+    # print(P)
+    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
+    G = []
+    for i in range(len(meanvec)):
+        k = [0 for x in range(len(meanvec) - 1)]
+        k.insert(i, -1)
+        G.append(k)
+    for i in range(len(meanvec)):
+        k = [-upperbound for x in range(len(meanvec) - 1)]
+        k.insert(i, 1 - upperbound)
+        G.append(k)
+    k = [-bounded_list for i in range((list_normal))]
+    for i in range((list_group)):
+        k.insert(i,1-bounded_list)
+    G.append(k)
+    k = [bounded_list for i in range((list_normal))]
+    for i in range((list_group)):
+        k.insert(i,  bounded_list-1)
+    G.append(k)
+    G = matrix(np.array(G))
+    H = np.zeros(2 * len(meanvec)+2)
+    h = matrix(H, tc='d')
+    A = (matrix(meanvec)).trans()
+    b = matrix([1], (1, 1), tc='d')
+    # print('G',G)
+    # print('h',h)
+    # print('A',A)
+    # print('b',b)
+    sol = (solvers.qp(P, q, G, h, A, b))['x']
+    solution = [x for x in sol]
+    sum = 0
+    for i in range(len(solution)):
+        sum += solution[i]
+    optimizedWeigh = [x / sum for x in solution]
+    print(optimizedWeigh)
+    merge = []
+    counter = 0
+    for (columnName, columnData) in dataframe1.iteritems():
+        # print(real[counter])
+        if len(merge) == 0:
+            merge = dataframe1[columnName] * optimizedWeigh[counter]
+        else:
+            merge = merge + dataframe1[columnName] * optimizedWeigh[counter]
+        counter += 1
+    # print(merge)
+    # print('dd,', it.max_drawdown(booksize=booksize, returnSeries=merge))
+    print('sharpe,', it.calculateSharpe(merge))
+    merge = merge*10
+    # print('value',merge)
+    # merge.to_csv(r'/home/hoainam/PycharmProjects/multi_strategy/v_multi/f1m.csv')
+    # print(np.cumsum(merge))
+    # plt.plot(np.cumsum(merge))
+    # plt.grid(True)
+    # plt.legend(('old', 'maxsharpe', 'minDD'))
+    # plt.show()
+    return optimizedWeigh
+
+#traditional futures
+def trad_futures(list_group,list_normal,dataframe,booksize,upperbound, bounded_list,dataframe1):
+    # print(tabulate(dataframe.corr(method='pearson'), tablefmt="pipe", headers="keys"))
+    # upperbound = 0.3
+    it = infoTest()
+    cov = (dataframe.cov()).to_numpy()
+    meanvec = (dataframe.mean()).to_numpy()
+    P = matrix(cov, tc='d')
+    # print(P)
+    q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
+    G = []
+    for i in range(len(meanvec)):
+        k = [0 for x in range(len(meanvec) - 1)]
+        k.insert(i, -1)
+        G.append(k)
+    for i in range(len(meanvec)):
+        k = [-upperbound for x in range(len(meanvec) - 1)]
+        k.insert(i, 1 - upperbound)
+        G.append(k)
+    k = [-bounded_list for i in range((list_normal))]
+    for i in range((list_group)):
+        k.insert(i,1-bounded_list)
+    G.append(k)
+    k = [bounded_list for i in range((list_normal))]
+    for i in range((list_group)):
+        k.insert(i,  bounded_list-1)
+    G.append(k)
+    G = matrix(np.array(G))
+    H = np.zeros(2 * len(meanvec)+2)
+    h = matrix(H, tc='d')
+    A = (matrix(meanvec)).trans()
+    b = matrix([1], (1, 1), tc='d')
+    # print('G',G)
+    # print('h',h)
+    # print('A',A)
+    # print('b',b)
+    sol = (solvers.qp(P, q, G, h, A, b))['x']
+    solution = [x for x in sol]
+    sum = 0
+    for i in range(len(solution)):
+        sum += solution[i]
+    optimizedWeigh = [x / sum for x in solution]
+    print(optimizedWeigh)
+    merge = []
+    counter = 0
+    for (columnName, columnData) in dataframe1.iteritems():
+        # print(real[counter])
+        if len(merge) == 0:
+            merge = dataframe1[columnName] * optimizedWeigh[counter]
+        else:
+            merge = merge + dataframe1[columnName] * optimizedWeigh[counter]
+        counter += 1
+    # print(merge)
+    # print('dd,', it.max_drawdown(booksize=booksize, returnSeries=merge))
+    print('sharpe,', it.calculateSharpe(merge))
+    merge = merge*10
+    # print('value',merge)
+    # merge.to_csv(r'/home/hoainam/PycharmProjects/multi_strategy/v_multi/f1m.csv')
+    # print(np.cumsum(merge))
+    # plt.plot(np.cumsum(merge))
+    # plt.grid(True)
+    # plt.legend(('old', 'maxsharpe', 'minDD'))
+    # plt.show()
+    return optimizedWeigh
+
+#max return with CDAR constraint:
 def MDD_constrained_futures(dataframe, bound_group, bound_alpha, alpha, v3):
     dataframe = dataframe.iloc[:,1:]/10**3
     # alpha = 0.95
@@ -203,8 +496,9 @@ def MDD_constrained_futures(dataframe, bound_group, bound_alpha, alpha, v3):
     # print(solution[:8])
     solution = [x for x in sol]
     solution = solution[:9]
-    return print(solution)
+    return solution
 
+#obj: MIN conditional drawdown at risk
 def MinCVaR_futures(dataframe, bound_group, bound_alpha, alpha):
     dataframe = dataframe.iloc[:,1:]/10**3
     # alpha = 0.95
@@ -366,6 +660,7 @@ def MinCVaR_futures(dataframe, bound_group, bound_alpha, alpha):
     solution = solution[:9]
     return print(solution)
 
+#max_sharpe with delta parameter
 def MDD_delta_futures(dataframe, bound_group, bound_alpha, alpha, theta):
     # dataframe = train1
     # bound_group = 0.36
@@ -555,6 +850,7 @@ def MDD_delta_futures(dataframe, bound_group, bound_alpha, alpha, theta):
     print(solution)
     return sharpe, sharpe1
 
+#modified max_sharpe
 def max_sharpe(dataframe):
     #max sharpe:
     v3 = 0.1
@@ -765,6 +1061,7 @@ def max_sharpe(dataframe):
     print(np.sum(solution[:4]))
     return solution
 
+#parameter searching function:
 def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     dataframe = dataframe.iloc[:,1:]/10**3
     # alpha = 0.95
@@ -945,7 +1242,6 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     new_ratio5 = dis_ret.mean()/max_drawdown
     return sr
 
-
 # MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.1)
 # MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.1)
 # MDD_constrained_futures(train3,0.36, 0.16, 0.95, 0.1)
@@ -982,24 +1278,26 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 # MDD_delta_futures(train7, 0.36, 0.16, 0.95,49.324624624624626)
 
 #filter for v3:
-ranging = np.linspace(0.06, 0.08, 20)
-alpha_range = np.linspace(0.85, 0.95, 10)
-train_set = [train1, train2, train3, train4, train5, train6, train7]
-best_list = []
-best_ilist =[]
-for j in train_set:
-    v_list =[]
-    i_list =[]
-    for k in alpha_range:
-        for i in (ranging):
-            try:
-                new_ratio = MDD_constrained_futures_run(j,0.36, 0.16, k, i)
-                v_list.append(new_ratio)
-                i_list.append([k, i])
-            except:
-                pass
-    max_index = np.argmax(v_list)
-    best_ilist.append(i_list[max_index])
-    best_list.append(v_list[max_index])
-print(best_list)
-print(best_ilist)
+
+if __name__ == '__main__':
+    ranging = np.linspace(0.06, 0.08, 20)
+    alpha_range = np.linspace(0.85, 0.95, 10)
+    train_set = [train1, train2, train3, train4, train5, train6, train7]
+    best_list = []
+    best_ilist =[]
+    for j in train_set:
+        v_list =[]
+        i_list =[]
+        for k in alpha_range:
+            for i in (ranging):
+                try:
+                    new_ratio = MDD_constrained_futures_run(j,0.36, 0.16, k, i)
+                    v_list.append(new_ratio)
+                    i_list.append([k, i])
+                except:
+                    pass
+        max_index = np.argmax(v_list)
+        best_ilist.append(i_list[max_index])
+        best_list.append(v_list[max_index])
+    print(best_list)
+    print(best_ilist)
