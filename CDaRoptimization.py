@@ -121,7 +121,7 @@ def cum_ret1(df,weight):
     sharpe = it.calculateSharpe(ret)
     return sharpe
 
-#drawdown calculator
+#drawdown calculator for parameter searching function
 def md_calculator1(booksize, weight, dataframe):
     dis_ret = np.dot(dataframe, weight)
     cum_ret = np.cumsum(dis_ret)
@@ -1228,7 +1228,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 
     #weight list
     weight = solution[:9]
-    mean_drawdown, max_drawdown = md_calculator(10**3, weight, dataframe)
+    mean_drawdown, max_drawdown = md_calculator1(10**3, weight, dataframe)
     #calculate sharpe
     dis_ret = np.dot(dataframe, weight)
     cum_ret = np.cumsum(dis_ret)
