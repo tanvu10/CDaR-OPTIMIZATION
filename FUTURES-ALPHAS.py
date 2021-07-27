@@ -1,6 +1,6 @@
 import os
-os.chdir('D:/data-vietquant/futures-alpha-rolling')
-# os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+# os.chdir('D:/data-vietquant/futures-alpha-rolling')
+os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
 
 
 import json
