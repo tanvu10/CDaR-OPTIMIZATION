@@ -1,6 +1,4 @@
-import os
-os.chdir('D:/data-vietquant/futures-alpha-rolling')
-# os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+
 
 import json
 import numpy as np
@@ -16,13 +14,6 @@ from datetime import datetime
 import itertools
 
 
-train1 = pd.read_csv('train1.csv',parse_dates=['datetime'])
-train2 = pd.read_csv('train2.csv',parse_dates=['datetime'])
-train3 = pd.read_csv('train3.csv',parse_dates=['datetime'])
-train4 = pd.read_csv('train4.csv',parse_dates=['datetime'])
-train5 = pd.read_csv('train5.csv',parse_dates=['datetime'])
-train6 = pd.read_csv('train6.csv',parse_dates=['datetime'])
-train7 = pd.read_csv('train7.csv',parse_dates=['datetime'])
 
 class infoTest:
     def __init__(self):
@@ -1228,7 +1219,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 
     #weight list
     weight = solution[:9]
-    mean_drawdown, max_drawdown = md_calculator(10**3, weight, dataframe)
+    mean_drawdown, max_drawdown = md_calculator1(10**3, weight, dataframe)
     #calculate sharpe
     dis_ret = np.dot(dataframe, weight)
     cum_ret = np.cumsum(dis_ret)
@@ -1280,6 +1271,22 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 #filter for v3:
 
 if __name__ == '__main__':
+
+    #import source data
+    import os
+    # os.chdir('D:/data-vietquant/futures-alpha-rolling')
+    os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+
+    #import data
+    train1 = pd.read_csv('train1.csv', parse_dates=['datetime'])
+    train2 = pd.read_csv('train2.csv', parse_dates=['datetime'])
+    train3 = pd.read_csv('train3.csv', parse_dates=['datetime'])
+    train4 = pd.read_csv('train4.csv', parse_dates=['datetime'])
+    train5 = pd.read_csv('train5.csv', parse_dates=['datetime'])
+    train6 = pd.read_csv('train6.csv', parse_dates=['datetime'])
+    train7 = pd.read_csv('train7.csv', parse_dates=['datetime'])
+
+    #parameter searching
     ranging = np.linspace(0.06, 0.08, 20)
     alpha_range = np.linspace(0.85, 0.95, 10)
     train_set = [train1, train2, train3, train4, train5, train6, train7]
