@@ -614,13 +614,13 @@ cov7_G = cov7_G.iloc[:,1:]
 # MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 
 # #max SHARPE/CDAR: decent return - good dd - count = 9
-MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889, 0.06)
-MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9277777777777777, 0.06)
-MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.06)
-MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9166666666666666, 0.06)
-MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.8833333333333333, 0.06)
-MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.06)
-MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
+# MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.9388888888888889, 0.06)
+# MDDw2 = MDD_constrained_futures(train2,0.36, 0.16, 0.9277777777777777, 0.06)
+# MDDw3 = MDD_constrained_futures(train3,0.36, 0.16, 0.9277777777777777, 0.06)
+# MDDw4 = MDD_constrained_futures(train4,0.36, 0.16, 0.9166666666666666, 0.06)
+# MDDw5 = MDD_constrained_futures(train5,0.36, 0.16, 0.8833333333333333, 0.06)
+# MDDw6 = MDD_constrained_futures(train6,0.36, 0.16, 0.8722222222222222, 0.06)
+# MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 
 #max E(r)/CDAR:
 # MDDw1 = MDD_constrained_futures(train1,0.36, 0.16, 0.85, 0.06)
@@ -672,8 +672,8 @@ MDDw7 = MDD_constrained_futures(train7,0.36, 0.16, 0.8722222222222222, 0.06)
 trad_w1 = trad_futures(4,5,train1, 10**9,0.16,0.36,test1)
 Clayton_w1 = copula_futures(4,5, train1, 10**9, 0.16, 0.36, test1, cov1_C)
 Gaussian_w1 = copula_futures(4,5,train1, 10**9, 0.16, 0.36, test1, cov1_G)
-trad_w2 = trad_futures(4,5,train2, 10**9,0.16,0.36,test2)
 
+trad_w2 = trad_futures(4,5,train2, 10**9,0.16,0.36,test2)
 Clayton_w2 = copula_futures(4,5, train2, 10**9, 0.16, 0.36, test2, cov2_C)
 Gaussian_w2 = copula_futures(4,5,train2, 10**9, 0.16, 0.36, test2, cov2_G)
 

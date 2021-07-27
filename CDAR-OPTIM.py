@@ -943,7 +943,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     new_ratio3 = sr/max_drawdown
     new_ratio4 = dis_ret.mean()/mean_drawdown
     new_ratio5 = dis_ret.mean()/max_drawdown
-    return new_ratio3
+    return sr
 
 
 # MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.1)
