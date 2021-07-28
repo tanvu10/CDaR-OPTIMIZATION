@@ -446,8 +446,8 @@ def MDD_constrained_futures(dataframe, bound_group, bound_alpha, alpha, v3):
 
 
     #group 1 = 0.36
-    a21 = [1 for x in range(N-5)]
-    a22 = [0 for x in range(2*J + 1+ 5)]
+    a21 = [1 for x in range(N-6)]
+    a22 = [0 for x in range(2*J + 1+ 6)]
     A2 = np.append(a21,a22).reshape(1, -1)
     A2 = matrix(A2, tc= 'd')
     b2 = matrix([bound_group], (1,1), tc='d')
@@ -486,7 +486,7 @@ def MDD_constrained_futures(dataframe, bound_group, bound_alpha, alpha, v3):
     # print(sol['x'])
     # print(solution[:8])
     solution = [x for x in sol]
-    solution = solution[:9]
+    solution = solution[:10]
     return solution
 
 #obj: MIN conditional drawdown at risk
@@ -1171,8 +1171,8 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
 
 
     #group 1 = 0.36
-    a21 = [1 for x in range(N-5)]
-    a22 = [0 for x in range(2*J + 1+ 5)]
+    a21 = [1 for x in range(N-6)]
+    a22 = [0 for x in range(2*J + 1+ 6)]
     A2 = np.append(a21,a22).reshape(1, -1)
     A2 = matrix(A2, tc= 'd')
     b2 = matrix([bound_group], (1,1), tc='d')
@@ -1218,7 +1218,8 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     CDARX = np.dot(cdar, solution)*(10**3)
 
     #weight list
-    weight = solution[:9]
+    weight = solution[:10]
+    # print(weight)
     mean_drawdown, max_drawdown = md_calculator1(10**3, weight, dataframe)
     #calculate sharpe
     dis_ret = np.dot(dataframe, weight)
@@ -1231,7 +1232,7 @@ def MDD_constrained_futures_run(dataframe, bound_group, bound_alpha, alpha, v3):
     new_ratio3 = sr/max_drawdown
     new_ratio4 = dis_ret.mean()/mean_drawdown
     new_ratio5 = dis_ret.mean()/max_drawdown
-    return sr
+    return new_ratio2
 
 # MDD_constrained_futures(train1,0.36, 0.16, 0.95, 0.1)
 # MDD_constrained_futures(train2,0.36, 0.16, 0.95, 0.1)
@@ -1275,16 +1276,25 @@ if __name__ == '__main__':
     #import source data
     import os
     # os.chdir('D:/data-vietquant/futures-alpha-rolling')
-    os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+    # os.chdir('/Users/tanvu10/Downloads/data-vietquant/futures-alpha-rolling')
+    os.chdir('D:/data-vietquant/10-futures-alpha-rolling')
 
     #import data
-    train1 = pd.read_csv('train1.csv', parse_dates=['datetime'])
-    train2 = pd.read_csv('train2.csv', parse_dates=['datetime'])
-    train3 = pd.read_csv('train3.csv', parse_dates=['datetime'])
-    train4 = pd.read_csv('train4.csv', parse_dates=['datetime'])
-    train5 = pd.read_csv('train5.csv', parse_dates=['datetime'])
-    train6 = pd.read_csv('train6.csv', parse_dates=['datetime'])
-    train7 = pd.read_csv('train7.csv', parse_dates=['datetime'])
+    # train1 = pd.read_csv('train1.csv', parse_dates=['datetime'])
+    # train2 = pd.read_csv('train2.csv', parse_dates=['datetime'])
+    # train3 = pd.read_csv('train3.csv', parse_dates=['datetime'])
+    # train4 = pd.read_csv('train4.csv', parse_dates=['datetime'])
+    # train5 = pd.read_csv('train5.csv', parse_dates=['datetime'])
+    # train6 = pd.read_csv('train6.csv', parse_dates=['datetime'])
+    # train7 = pd.read_csv('train7.csv', parse_dates=['datetime'])
+
+    train1 = pd.read_csv('future_train1.csv', parse_dates=['datetime'])
+    train2 = pd.read_csv('future_train2.csv', parse_dates=['datetime'])
+    train3 = pd.read_csv('future_train3.csv', parse_dates=['datetime'])
+    train4 = pd.read_csv('future_train4.csv', parse_dates=['datetime'])
+    train5 = pd.read_csv('future_train5.csv', parse_dates=['datetime'])
+    train6 = pd.read_csv('future_train6.csv', parse_dates=['datetime'])
+    train7 = pd.read_csv('future_train7.csv', parse_dates=['datetime'])
 
     #parameter searching
     ranging = np.linspace(0.06, 0.08, 20)
