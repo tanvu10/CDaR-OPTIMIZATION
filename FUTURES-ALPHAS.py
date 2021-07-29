@@ -21,11 +21,11 @@ from datetime import datetime
 import itertools
 
 #import function from CDAR file
-from CDaR_optimization import MDD_constrained_futures
-from CDaR_optimization import copula_futures
-from CDaR_optimization import trad_futures
-from CDaR_optimization import infoTest
-from CDaR_optimization import cum_ret1
+from CDaR_optimization_futures import MDD_constrained_futures
+from CDaR_optimization_futures import copula_futures
+from CDaR_optimization_futures import trad_futures
+from CDaR_optimization_futures import infoTest
+from CDaR_optimization_futures import cum_ret1
 
 it  = infoTest()
 
