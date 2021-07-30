@@ -278,10 +278,12 @@ def trad_sharpe_with_unbounded(dataframe,list_num,bounded_list,test):
 #with 0.1 constraint:
 def copula_sharpe_with_bounded(dataframe,list_num,bounded_list,upperbound,test, cova):
     it=infoTest()
+    # cov = cova.astype(np.double)
+
     cov = (cova).to_numpy()
     meanvec = (dataframe.std()).to_numpy()
     meanvec = [i for i in meanvec]
-    P = matrix(cov, tc='d')
+    P = matrix(np.array(cov), tc='d')
     q = matrix(np.zeros(len(meanvec)), (len(meanvec), 1), tc='d')
     G=[]
     #wi >= 0
@@ -684,17 +686,19 @@ def MDD_constrained_fudamental_with_unbounded(dataframe, list_num, bound_group, 
 
 #parameter_checking
 def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group, bound_alpha, alpha, v3):
-    dataframe = dataframe.iloc[:,:]
     # alpha = 0.95
+    dataframe = dataframe.reset_index(drop =True)
     v3 = v3
+    # print(dataframe)
     #input to be cumulative return: y,u,z,epsilon
     cumulative = np.cumsum(dataframe, axis = 0)
     cumulative= pd.DataFrame(cumulative)
-    print(cumulative)
+    # print(-cumulative)
 
     #inequality constraint
     #1st constraint: wi >=0 <=> -wi <= 0
     J = dataframe.shape[0] #number of row
+    # print(J)
     N = dataframe.shape[1] #number of col
     g11 = pd.DataFrame(np.diag(np.ones(N)))     #xk
     g12 = pd.DataFrame(np.zeros([N,J*2+1]))     #uk, zk, epsilon
@@ -702,9 +706,9 @@ def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group,
     G1 = pd.concat([g11, g12], axis =1, ignore_index= True)
     G1 = -G1
     # print(matrix(np.array(G1)))
-    print(G1.size)
+    # print(G1.shape)
     h1  = pd.DataFrame(np.zeros(N).reshape(-1,1))
-    print(h1.size)
+    # print(h1.shape)
 
 
     #2nd constraint: -yk*x +uk - zk - epsilon <= 0
@@ -715,6 +719,7 @@ def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group,
     G2 = pd.concat([g21,g22,g23,g24], axis = 1, ignore_index = True)
     # print(G2)
     h2 = pd.DataFrame(np.zeros(J).reshape(-1,1))
+    # print(h2.shape)
 
     #3rd constraint: zk >= 0 <=> -zk <= 0
     g31 = pd.DataFrame(np.zeros([J,N])) #xk
@@ -787,8 +792,8 @@ def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group,
     G = matrix(np.array(G))
     h = pd.concat([h1, h2,h3, h4, h5, h6,h7], axis = 0,ignore_index=True)
     h = matrix(np.array(h))
-    print(G.size)
-    print(h.size)
+    # print(G.size)
+    # print(h.size)
     # print(G)
     # print(h)
     # breakpoint()
@@ -820,7 +825,7 @@ def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group,
     # print(A)
 
     # b = matrix(np.array(pd.concat([pd.DataFrame(b1), pd.DataFrame(b2)], axis = 1).T))
-    b = pd.DataFrame(b1).T
+    # b = pd.DataFrame(b1).T
     # print(b)
 
 
@@ -848,7 +853,7 @@ def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group,
     # solution = [x for x in sol]
     # solution = solution[:len(dataframe.columns)
 
-    sol = solvers.lp(c, G, h, A, b,solver ='glpk')['x']
+    sol = solvers.lp(c, G, h, A, b1,solver ='glpk')['x']
     solution = [x for x in sol]
 
     # conditional drawdown at risk:
@@ -874,10 +879,10 @@ def MDD_constrained_fudamental_with_bounded_pc(dataframe, list_num, bound_group,
     new_ratio3 = sr/max_drawdown
     new_ratio4 = dis_ret.mean()/mean_drawdown
     new_ratio5 = dis_ret.mean()/max_drawdown
-    return sr
+    return weight
 
 def MDD_constrained_fudamental_with_unbounded_pc(dataframe, list_num, bound_group, alpha, v3):
-    dataframe = dataframe.iloc[:,1:]
+    dataframe = dataframe.reset_index(drop =True)
     # alpha = 0.95
     v3 = v3
     #input to be cumulative return: y,u,z,epsilon
@@ -1032,7 +1037,7 @@ def MDD_constrained_fudamental_with_unbounded_pc(dataframe, list_num, bound_grou
     # c = matrix(np.array(c).T)
     # print(c)
 
-    sol = solvers.lp(c, G, h, A, b, solver='glpk')['x']
+    sol = solvers.lp(c, G, h, A, b1, solver='glpk')['x']
     solution = [x for x in sol]
 
     # conditional drawdown at risk:
@@ -1111,7 +1116,7 @@ if __name__ == "__main__":
         colList.append((i.split('/')[-1][:-4]).split("\\")[-1][:])
     m.columns = colList
     # print(m.columns)
-    m=m/(10**10)
+    m=m/(10**9)
     # print(m)
 
 
@@ -1172,8 +1177,10 @@ if __name__ == "__main__":
     #     best_list.append(v_list[max_index])
     # print(best_list)
     # print(best_ilist)
-
-    # w7= MDD_constrained_fudamental_with_bounded_pc(train_7, 6, 0.06, 0.1, 0.95, 0.08)
-    # print(w7)
+    # print(train_7)
+    w7= MDD_constrained_fudamental_with_bounded_pc(train_7, 6, 0.06,0.1, 0.7, 0.09)
+    plt.plot(pd.Series(np.cumsum(np.dot(test_7, w7))))
+    plt.show()
+    print(w7)
 
 

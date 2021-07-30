@@ -25,19 +25,23 @@ from CDaR_optimization_funda import trad_sharpe_with_bounded
 from CDaR_optimization_funda import trad_sharpe_with_unbounded
 from CDaR_optimization_funda import copula_sharpe_with_bounded
 from CDaR_optimization_funda import copula_sharpe_with_unbounded
+from CDaR_optimization_funda import infoTest
+from CDaR_optimization_funda import cum_ret1
+it = infoTest()
+
 
 def md_calculator(booksize, weight, dataframe):
     dis_ret = np.dot(dataframe, weight)
-    cum_ret = np.cumsum(dis_ret)*(10**10)
+    cum_ret = np.cumsum(dis_ret)*(booksize)
     mdd = 0
-    X = cum_ret + booksize
+    X = cum_ret + 10**10
     peak = X[0]
     ddsr = []
     #calculate dd
     for x in X:
         if x > peak:
             peak = x
-        dd = (peak - x) / booksize
+        dd = (peak - x) / 10**10
         ddsr.append(dd)
     #setting new mdd:
         if dd > mdd:
@@ -53,6 +57,45 @@ def md_calculator(booksize, weight, dataframe):
                                                                                                                                   np.quantile(ddsr, 0.75),np.quantile(ddsr, 0.90),
                                                                                                                                   np.max(ddsr), np.mean(ddsr)))
 
+def cum_ret(df1, weight1, df2, weight2, df3, weight3,df4, weight4, df5, weight5, df6, weight6,df7, weight7, booksize):
+    return_1 = np.dot(df1, weight1).reshape(-1,1)
+    return_2 = np.dot(df2, weight2).reshape(-1,1)
+    return_3 = np.dot(df3, weight3).reshape(-1,1)
+    return_4 = np.dot(df4, weight4).reshape(-1,1)
+    return_5 = np.dot(df5, weight5).reshape(-1,1)
+    return_6 = np.dot(df6, weight6).reshape(-1,1)
+    return_7 = np.dot(df7, weight7).reshape(-1,1)
+    dis_ret = np.vstack((return_1, return_2,return_3,return_4,return_5,return_6,return_7))
+    cum_ret = np.cumsum(dis_ret)*(booksize)
+    sharpe = it.calculateSharpe(dis_ret)
+
+    #mdd plot
+    mdd = 0
+    X = cum_ret + 10**10
+    peak = X[0]
+    ddsr = []
+    count =0
+    # calculate dd
+    for x in X:
+        if x > peak:
+            peak = x
+        dd = (peak - x) / 10**10
+        ddsr.append(dd)
+        # setting new mdd:
+        if dd > mdd:
+            mdd = dd
+            count +=1
+            # print(mdd)
+    # pd.Series(cum_ret).plot()
+    # plt.legend([1,2,3])
+    ax1 = plt.subplot(gs[0, :])
+    ax2 = plt.subplot(gs[1:, :])
+    ax1.plot(pd.Series(ddsr))
+    ax2.plot(pd.Series(cum_ret))
+    print('count: ', count)
+    print('25th quantile: %s, meadian: %s, 75th quantile: %s, 90th quantile: %s, max drawdown: %s, average drawdown: %s' %(np.quantile(ddsr, 0.25), np.quantile(ddsr, 0.5),np.quantile(ddsr, 0.75),
+                                                                                                        np.quantile(ddsr, 0.90),np.max(ddsr), np.mean(ddsr)))
+    return print('sharpe =', sharpe)
 
 
 
@@ -79,6 +122,18 @@ test7 = pd.read_csv('test7.csv',parse_dates=['datetime'],index_col=['datetime'])
 
 #import simulation data
 os.chdir('D:/data-vietquant/fundamental/fundamental_simulation')
+simu_G1 = pd.read_csv('X1_G.csv')
+simu_G1 = simu_G1.iloc[:,1:]
+
+simu_G2 = pd.read_csv('X2_G.csv')
+simu_G2 = simu_G2.iloc[:,1:]
+
+simu_G3 = pd.read_csv('X3_G.csv')
+simu_G3 = simu_G3.iloc[:,1:]
+
+simu_G4 = pd.read_csv('X4_G.csv')
+simu_G4 = simu_G4.iloc[:,1:]
+
 simu_G5 = pd.read_csv('X5_G.csv')
 simu_G5 = simu_G5.iloc[:,1:]
 
@@ -91,6 +146,18 @@ simu_G7 = simu_G7.iloc[:,1:]
 
 
 os.chdir('D:/data-vietquant/fundamental/fundamental_cov')
+cov1_G = pd.read_csv('cov1_G.csv')
+cov1_G = cov1_G.iloc[:,1:]
+
+cov2_G = pd.read_csv('cov2_G.csv')
+cov2_G = cov2_G.iloc[:,1:]
+
+cov3_G = pd.read_csv('cov3_G.csv')
+cov3_G = cov3_G.iloc[:,1:]
+
+cov4_G = pd.read_csv('cov4_G.csv')
+cov4_G = cov4_G.iloc[:,1:]
+
 cov5_G = pd.read_csv('cov5_G.csv')
 cov5_G = cov5_G.iloc[:,1:]
 
@@ -102,28 +169,156 @@ cov7_G = cov7_G.iloc[:,1:]
 # print(cov7_G)
 
 #traditional
-tradw5_bounded = trad_sharpe_with_bounded(train5, 6,0.06, 0.1, test5)
-tradw5_unbounded = trad_sharpe_with_unbounded(train5, 6,0.06, test5)
+tradw1_bounded = trad_sharpe_with_bounded(train1, 7,0.06, 0.1, test1)
+tradw1_unbounded = trad_sharpe_with_unbounded(train1, 7,0.06, test1)
 
-tradw6_bounded = trad_sharpe_with_bounded(train6, 6,0.06, 0.1, test6)
-tradw6_unbounded = trad_sharpe_with_unbounded(train6, 6,0.06, test6)
+tradw2_bounded = trad_sharpe_with_bounded(train2, 7,0.06, 0.1, test2)
+tradw2_unbounded = trad_sharpe_with_unbounded(train2, 7,0.06, test2)
 
+tradw3_bounded = trad_sharpe_with_bounded(train3, 7,0.06, 0.1, test3)
+tradw3_unbounded = trad_sharpe_with_unbounded(train3, 7,0.06, test3)
 
-tradw7_bounded = trad_sharpe_with_bounded(train7, 6,0.06, 0.1, test7)
-tradw7_unbounded = trad_sharpe_with_unbounded(train7,6, 0.06, test7)
-# print(tradw7_bounded)
-# print(tradw7_unbounded)
+tradw4_bounded = trad_sharpe_with_bounded(train4, 7,0.06, 0.1, test3)
+tradw4_unbounded = trad_sharpe_with_unbounded(train4,7, 0.06, test4)
+
+tradw5_bounded = trad_sharpe_with_bounded(train5, 7,0.06, 0.1, test5)
+tradw5_unbounded = trad_sharpe_with_unbounded(train5, 7,0.06, test5)
+
+tradw6_bounded = trad_sharpe_with_bounded(train6, 7,0.06, 0.1, test6)
+tradw6_unbounded = trad_sharpe_with_unbounded(train6, 7,0.06, test6)
+#
+tradw7_bounded = trad_sharpe_with_bounded(train7, 7,0.06, 0.1, test7)
+tradw7_unbounded = trad_sharpe_with_unbounded(train7,7, 0.06, test7)
+print(tradw7_bounded)
+print(tradw7_unbounded)
 #copula
-Gw5_bounded = copula_sharpe_with_bounded(simu_G5,6, 0.06, 0.1,test1, cov5_G)
-Gw5_unbounded = copula_sharpe_with_unbounded(simu_G5,6, 0.06,test1, cov5_G)
+Gw1_bounded = copula_sharpe_with_bounded(train1,7, 0.06, 0.1,test1, cov1_G)
+# print(Gw1_bounded)
+Gw1_unbounded = copula_sharpe_with_unbounded(train1,7, 0.06,test1, cov1_G)
+# print((Gw1_unbounded))
+# Gw1_bounded = trad_sharpe_with_bounded(simu_G1, 7,0.06, 0.1, test1)
+# Gw1_unbounded = trad_sharpe_with_unbounded(simu_G1, 7,0.06, test1)
+# #)
 
-Gw6_bounded = copula_sharpe_with_bounded(simu_G6,6, 0.06, 0.1,test2, cov6_G)
-Gw6_unbounded = copula_sharpe_with_unbounded(simu_G6,6, 0.06,test2, cov6_G)
+Gw2_bounded = copula_sharpe_with_bounded(simu_G2,7, 0.06, 0.1,test2, cov2_G)
+Gw2_unbounded = copula_sharpe_with_unbounded(simu_G2,7, 0.06,test2, cov2_G)
+# Gw2_bounded = trad_sharpe_with_bounded(simu_G2, 7,0.06, 0.1, test2)
+# Gw2_unbounded = trad_sharpe_with_unbounded(simu_G2, 7,0.06, test2)
 
-Gw7_bounded = copula_sharpe_with_bounded(simu_G7,6, 0.06, 0.1,test7, cov7_G)
-Gw7_unbounded = copula_sharpe_with_unbounded(simu_G7,6, 0.06,test7, cov7_G)
-# print(Gw7_bounded)
-# print(Gw7_unbounded)
+#
+Gw3_bounded = copula_sharpe_with_bounded(simu_G3,7, 0.06, 0.1,test3, cov3_G)
+Gw3_unbounded = copula_sharpe_with_unbounded(simu_G3,7, 0.06,test3, cov3_G)
+
+#
+Gw4_bounded = copula_sharpe_with_bounded(simu_G4,7, 0.06, 0.1,test4, cov4_G)
+Gw4_unbounded = copula_sharpe_with_unbounded(simu_G4,7, 0.06,test4, cov4_G)
+#
+Gw5_bounded = copula_sharpe_with_bounded(simu_G5,7, 0.06, 0.1,test5, cov5_G)
+Gw5_unbounded = copula_sharpe_with_unbounded(simu_G5,7, 0.06,test5, cov5_G)
+#
+Gw6_bounded = copula_sharpe_with_bounded(simu_G6,7, 0.06, 0.1,test6, cov6_G)
+Gw6_unbounded = copula_sharpe_with_unbounded(simu_G6,7, 0.06,test6, cov6_G)
+#
+Gw7_bounded = copula_sharpe_with_bounded(simu_G7,7, 0.06, 0.1,test7, cov7_G)
+Gw7_unbounded = copula_sharpe_with_unbounded(simu_G7,7, 0.06,test7, cov7_G)
+print(Gw7_bounded)
+print(Gw7_unbounded)
+
+
+
+print('MDD1')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw1_bounded, test1)
+md_calculator(10**9, tradw1_unbounded, test1)
+md_calculator(10**9,Gw1_bounded, test1)
+md_calculator(10**9,Gw1_unbounded, test1)
+plt.show()
+
+print('MDD2')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw2_bounded, test2)
+md_calculator(10**9, tradw2_unbounded, test2)
+md_calculator(10**9,Gw2_bounded, test2)
+md_calculator(10**9,Gw2_unbounded, test2)
+plt.show()
+
+print('MDD3')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw3_bounded, test3)
+md_calculator(10**9, tradw3_unbounded, test3)
+md_calculator(10**9,Gw3_bounded, test3)
+md_calculator(10**9,Gw3_unbounded, test3)
+plt.show()
+
+print('MDD4')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw4_bounded, test4)
+md_calculator(10**9, tradw4_unbounded, test4)
+md_calculator(10**9,Gw4_bounded, test4)
+md_calculator(10**9,Gw4_unbounded, test4)
+plt.show()
+
+
+print('MDD5')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw5_bounded, test5)
+md_calculator(10**9, tradw5_unbounded, test5)
+md_calculator(10**9,Gw5_bounded, test5)
+md_calculator(10**9,Gw5_unbounded, test5)
+plt.show()
+
+print('MDD6')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw6_bounded, test6)
+md_calculator(10**9, tradw6_unbounded, test6)
+md_calculator(10**9,Gw6_bounded, test6)
+md_calculator(10**9,Gw6_unbounded, test6)
+plt.show()
+
+
+print('MDD7')
+gs = gridspec.GridSpec(3, 3)
+md_calculator(10**9, tradw7_bounded, test7)
+md_calculator(10**9, tradw7_unbounded, test7)
+md_calculator(10**9,Gw7_bounded, test7)
+md_calculator(10**9,Gw7_unbounded, test7)
+plt.show()
+
+
+print("WHOLE PERIOD")
+gs = gridspec.GridSpec(3, 3)
+cum_ret(test1,tradw1_bounded, test2, tradw2_bounded, test3, tradw3_bounded,test4,
+        tradw4_bounded, test5, tradw5_bounded, test6, tradw6_bounded, test7,tradw7_bounded, 10**9)
+cum_ret(test1,tradw1_unbounded, test2, tradw2_unbounded, test3, tradw3_unbounded,test4,
+        tradw4_unbounded, test5, tradw5_unbounded, test6, tradw6_unbounded, test7,tradw7_unbounded, 10**9)
+cum_ret(test1,Gw1_bounded, test2, Gw2_bounded, test3, Gw3_bounded,
+        test4,Gw4_bounded, test5, Gw5_bounded, test6, Gw6_bounded,test7, Gw7_bounded,10**9)
+cum_ret(test1,Gw1_unbounded, test2, Gw2_unbounded, test3, Gw3_unbounded,
+        test4,Gw4_unbounded, test5, Gw5_unbounded, test6, Gw6_unbounded,test7, Gw7_unbounded,10**9)
+plt.show()
+#
+
+
+Trad_bounded = [cum_ret1(test1,tradw1_bounded),cum_ret1(test2,tradw2_bounded),
+        cum_ret1(test3,tradw3_bounded),cum_ret1(test4,tradw4_bounded),
+        cum_ret1(test5,tradw5_bounded),cum_ret1(test6,tradw6_bounded),cum_ret1(test7,tradw7_bounded)]
+Trad_unbounded = [cum_ret1(test1,tradw1_unbounded),cum_ret1(test2,tradw2_unbounded),
+        cum_ret1(test3,tradw3_unbounded),cum_ret1(test4,tradw4_unbounded),
+        cum_ret1(test5,tradw5_unbounded),cum_ret1(test6,tradw6_unbounded),cum_ret1(test7,tradw7_unbounded)]
+
+Gauss_bounded = [cum_ret1(test1,Gw1_bounded),cum_ret1(test2,Gw2_bounded),cum_ret1(test3,Gw3_bounded)
+                ,cum_ret1(test4,Gw4_bounded),cum_ret1(test5,Gw5_bounded),cum_ret1(test6,Gw6_bounded),
+                                                                          cum_ret1(test7,Gw7_bounded)]
+
+Gauss_unbounded = [cum_ret1(test1,Gw1_unbounded),cum_ret1(test2,Gw2_unbounded),cum_ret1(test3,Gw3_unbounded)
+                ,cum_ret1(test4,Gw4_unbounded),cum_ret1(test5,Gw5_unbounded),cum_ret1(test6,Gw6_unbounded),
+                                                                          cum_ret1(test7,Gw7_unbounded)]
+
+
+Sharpe = {'trad_bounded' : Trad_bounded, 'trad_unbounded': Trad_unbounded, 'G_bounded': Gauss_bounded, 'G_unbounded': Gauss_unbounded}
+Sharpe = pd.DataFrame(Sharpe)
+
+print(Sharpe)
 
 
 #PERIOD 7
@@ -134,27 +329,3 @@ print(port7)
 os.chdir('D:/data-vietquant/fundamental')
 # port7.to_csv('Port_test_7.csv')
 
-print('MDD5')
-gs = gridspec.GridSpec(3, 3)
-md_calculator(10**10, tradw5_bounded, test5)
-md_calculator(10**10, tradw5_unbounded, test5)
-md_calculator(10**10,Gw5_bounded, test5)
-md_calculator(10**10,Gw5_unbounded, test5)
-plt.show()
-
-print('MDD6')
-gs = gridspec.GridSpec(3, 3)
-md_calculator(10**10, tradw6_bounded, test6)
-md_calculator(10**10, tradw6_unbounded, test6)
-md_calculator(10**10,Gw6_bounded, test6)
-md_calculator(10**10,Gw6_unbounded, test6)
-plt.show()
-
-
-print('MDD7')
-gs = gridspec.GridSpec(3, 3)
-md_calculator(10**10, tradw7_bounded, test7)
-md_calculator(10**10, tradw7_unbounded, test7)
-md_calculator(10**10,Gw7_bounded, test7)
-md_calculator(10**10,Gw7_unbounded, test7)
-plt.show()
