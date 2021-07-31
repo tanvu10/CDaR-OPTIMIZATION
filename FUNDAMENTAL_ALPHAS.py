@@ -101,14 +101,15 @@ def cum_ret(df1, weight1, df2, weight2, df3, weight3,df4, weight4, df5, weight5,
 
 #IMPORT
 os.chdir('D:/data-vietquant/fundamental/fundamental_data')
-train1 = pd.read_csv('train1.csv',parse_dates=['datetime'])
-train2 = pd.read_csv('train2.csv',parse_dates=['datetime'])
-train3 = pd.read_csv('train3.csv',parse_dates=['datetime'])
-train4 = pd.read_csv('train4.csv',parse_dates=['datetime'])
-train5 = pd.read_csv('train5.csv',parse_dates=['datetime'])
-train6 = pd.read_csv('train6.csv',parse_dates=['datetime'])
-train7 = pd.read_csv('train7.csv',parse_dates=['datetime'])
-
+train1 = pd.read_csv('train1.csv',parse_dates=['datetime'],index_col=['datetime'])
+train2 = pd.read_csv('train2.csv',parse_dates=['datetime'],index_col=['datetime'])
+train3 = pd.read_csv('train3.csv',parse_dates=['datetime'],index_col=['datetime'])
+train4 = pd.read_csv('train4.csv',parse_dates=['datetime'],index_col=['datetime'])
+train5 = pd.read_csv('train5.csv',parse_dates=['datetime'],index_col=['datetime'])
+train6 = pd.read_csv('train6.csv',parse_dates=['datetime'],index_col=['datetime'])
+train7 = pd.read_csv('train7.csv',parse_dates=['datetime'],index_col=['datetime'])
+train8 = pd.read_csv('train8.csv',parse_dates=['datetime'],index_col=['datetime'])
+print(train8)
 #test:
 
 test1 = pd.read_csv('test1.csv',parse_dates=['datetime'],index_col=['datetime'])
@@ -144,6 +145,9 @@ simu_G7 = pd.read_csv('X7_G.csv')
 simu_G7 = simu_G7.iloc[:,1:]
 # print(simu_G7)
 
+simu_G8 = pd.read_csv('X8_G.csv')
+simu_G8 = simu_G8.iloc[:,1:]
+
 
 os.chdir('D:/data-vietquant/fundamental/fundamental_cov')
 cov1_G = pd.read_csv('cov1_G.csv')
@@ -168,6 +172,9 @@ cov7_G = pd.read_csv('cov7_G.csv')
 cov7_G = cov7_G.iloc[:,1:]
 # print(cov7_G)
 
+cov8_G = pd.read_csv('cov8_G.csv')
+cov8_G = cov8_G.iloc[:,1:]
+
 #traditional
 tradw1_bounded = trad_sharpe_with_bounded(train1, 7,0.06, 0.1, test1)
 tradw1_unbounded = trad_sharpe_with_unbounded(train1, 7,0.06, test1)
@@ -189,8 +196,16 @@ tradw6_unbounded = trad_sharpe_with_unbounded(train6, 7,0.06, test6)
 #
 tradw7_bounded = trad_sharpe_with_bounded(train7, 7,0.06, 0.1, test7)
 tradw7_unbounded = trad_sharpe_with_unbounded(train7,7, 0.06, test7)
+
+
+tradw8_bounded = trad_sharpe_with_bounded(train8, 7,0.06, 0.1, train8)
+tradw8_unbounded = trad_sharpe_with_unbounded(train8,7, 0.06, train8)
 print(tradw7_bounded)
 print(tradw7_unbounded)
+print(tradw8_bounded)
+print(tradw8_unbounded)
+
+
 #copula
 Gw1_bounded = copula_sharpe_with_bounded(train1,7, 0.06, 0.1,test1, cov1_G)
 # print(Gw1_bounded)
@@ -221,8 +236,16 @@ Gw6_unbounded = copula_sharpe_with_unbounded(simu_G6,7, 0.06,test6, cov6_G)
 #
 Gw7_bounded = copula_sharpe_with_bounded(simu_G7,7, 0.06, 0.1,test7, cov7_G)
 Gw7_unbounded = copula_sharpe_with_unbounded(simu_G7,7, 0.06,test7, cov7_G)
+
+
+Gw8_bounded = copula_sharpe_with_bounded(simu_G8,7, 0.06, 0.1,train8, cov8_G)
+Gw8_unbounded = copula_sharpe_with_unbounded(simu_G8,7, 0.06,train8, cov8_G)
 print(Gw7_bounded)
 print(Gw7_unbounded)
+
+print(np.sum(Gw8_bounded))
+
+print(np.sum(Gw8_unbounded))
 
 
 
@@ -324,8 +347,17 @@ print(Sharpe)
 #PERIOD 7
 port7 = {'trad_bounded':tradw7_bounded,'trad_unbounded' : tradw7_unbounded, 'Gauss_bounded': Gw7_bounded, 'Gauss_unbounded': Gw7_unbounded}
 port7 = pd.DataFrame(port7)
-port7.index = train1.columns[1:]
+port7.index = train1.columns
 print(port7)
+
+#PERIOD 8
+port8 = {'trad_bounded':tradw8_bounded,'trad_unbounded' : tradw8_unbounded, 'Gauss_bounded': Gw8_bounded, 'Gauss_unbounded': Gw8_unbounded}
+port8 = pd.DataFrame(port8)
+port8.index = train1.columns
+print(port8)
+
 os.chdir('D:/data-vietquant/fundamental')
 # port7.to_csv('Port_test_7.csv')
+# port8.to_csv('Port_test_8.csv')
+
 

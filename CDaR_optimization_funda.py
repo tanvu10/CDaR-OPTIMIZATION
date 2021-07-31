@@ -1127,7 +1127,8 @@ if __name__ == "__main__":
     train_5 = m['2017-01-01':'2020-10-31']
     train_6 = m['2017-01-01':'2021-01-31']
     train_7 = m['2017-01-01':'2021-04-30']
-
+    train_8 = m['2017-01-01':]
+    print(train_8)
     test_1 = m['2019-11-01':'2020-01-31']
     test_2 = m['2020-02-01':'2020-04-30']
     test_3 = m['2020-05-01':'2020-07-31']
@@ -1146,6 +1147,7 @@ if __name__ == "__main__":
     # train_5.to_csv('train5.csv')
     # train_6.to_csv('train6.csv')
     # train_7.to_csv('train7.csv')
+    # train_8.to_csv('train8.csv')
     # test_1.to_csv('test1.csv')
     # test_2.to_csv('test2.csv')
     # test_3.to_csv('test3.csv')
@@ -1155,7 +1157,7 @@ if __name__ == "__main__":
     # test_7.to_csv('test7.csv')
 
     #parameter searching
-    # ranging = np.linspace(0.06, 0.08, 20)
+    # ranging = np.linspace(0.06, 0.09, 20)
     # alpha_range = np.linspace(0.85, 0.95, 10)
     # train_set = [train_7]
     # best_list = []
@@ -1178,9 +1180,9 @@ if __name__ == "__main__":
     # print(best_list)
     # print(best_ilist)
     # print(train_7)
-    w7= MDD_constrained_fudamental_with_bounded_pc(train_7, 6, 0.06,0.1, 0.7, 0.09)
-    plt.plot(pd.Series(np.cumsum(np.dot(test_7, w7))))
-    plt.show()
-    print(w7)
+    # w7= MDD_constrained_fudamental_with_unbounded_pc(train_7, 6, 0.06, 0.7, 0.09)
+    # plt.plot(pd.Series(np.cumsum(np.dot(test_7, w7))))
+    # plt.show()
+    # print(w7)
 
 
