@@ -1094,7 +1094,7 @@ if __name__ == "__main__":
         # except:
         # print("ERROR : ", file)
         # print(file)
-        # print(tempDf)
+        print(tempDf)
         # tempDf = pd.read_csv(file,parse_dates=[3],index_col=3)
         # tempDf = tempDf[tempDf.index >= datetime.utcnow().replace(year = 2020, month = 10, day =1, hour =0, minute=0, second=0)]
 

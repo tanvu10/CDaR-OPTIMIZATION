@@ -343,6 +343,41 @@ Sharpe = pd.DataFrame(Sharpe)
 
 print(Sharpe)
 
+#PERIOD 1
+port1 = {'trad_bounded':tradw1_bounded,'trad_unbounded' : tradw1_unbounded, 'Gauss_bounded': Gw1_bounded, 'Gauss_unbounded': Gw1_unbounded}
+port1 = pd.DataFrame(port1)
+port1.index = train1.columns
+print(port1)
+
+#PERIOD 2
+port2 = {'trad_bounded':tradw2_bounded,'trad_unbounded' : tradw2_unbounded, 'Gauss_bounded': Gw2_bounded, 'Gauss_unbounded': Gw2_unbounded}
+port2 = pd.DataFrame(port2)
+port2.index = train1.columns
+print(port2)
+
+#PERIOD 3
+port3 = {'trad_bounded':tradw3_bounded,'trad_unbounded' : tradw3_unbounded, 'Gauss_bounded': Gw3_bounded, 'Gauss_unbounded': Gw3_unbounded}
+port3 = pd.DataFrame(port3)
+port3.index = train1.columns
+print(port3)
+
+#PERIOD 4
+port4 = {'trad_bounded':tradw4_bounded,'trad_unbounded' : tradw4_unbounded, 'Gauss_bounded': Gw4_bounded, 'Gauss_unbounded': Gw4_unbounded}
+port4 = pd.DataFrame(port4)
+port4.index = train1.columns
+print(port4)
+
+#PERIOD 5
+port5 = {'trad_bounded':tradw5_bounded,'trad_unbounded' : tradw5_unbounded, 'Gauss_bounded': Gw5_bounded, 'Gauss_unbounded': Gw5_unbounded}
+port5 = pd.DataFrame(port5)
+port5.index = train1.columns
+print(port5)
+
+#PERIOD 6
+port6 = {'trad_bounded':tradw6_bounded,'trad_unbounded' : tradw6_unbounded, 'Gauss_bounded': Gw6_bounded, 'Gauss_unbounded': Gw6_unbounded}
+port6 = pd.DataFrame(port6)
+port6.index = train1.columns
+print(port6)
 
 #PERIOD 7
 port7 = {'trad_bounded':tradw7_bounded,'trad_unbounded' : tradw7_unbounded, 'Gauss_bounded': Gw7_bounded, 'Gauss_unbounded': Gw7_unbounded}
@@ -357,7 +392,29 @@ port8.index = train1.columns
 print(port8)
 
 os.chdir('D:/data-vietquant/fundamental')
+
+# port1.to_csv('Port_test_1.csv')
+# port2.to_csv('Port_test_2.csv')
+# port3.to_csv('Port_test_3.csv')
+# port4.to_csv('Port_test_4.csv')
+# port5.to_csv('Port_test_5.csv')
+# port6.to_csv('Port_test_6.csv')
 # port7.to_csv('Port_test_7.csv')
 # port8.to_csv('Port_test_8.csv')
+# #
+# return_0 = np.dot(train1,Gw1_bounded).reshape(-1,1)
+# return_1 = np.dot(test1, Gw1_bounded).reshape(-1,1)
+# return_2 = np.dot(test2, Gw2_bounded).reshape(-1,1)
+# return_3 = np.dot(test3, Gw3_bounded).reshape(-1,1)
+# return_4 = np.dot(test4, Gw4_bounded).reshape(-1,1)
+# return_5 = np.dot(test5, Gw5_bounded).reshape(-1,1)
+# return_6 = np.dot(test6, Gw6_bounded).reshape(-1,1)
+# return_7 = np.dot(test7, Gw7_bounded).reshape(-1,1)
+# dis_ret = np.vstack((return_0, return_1, return_2,return_3,return_4,return_5,return_6,return_7))
+# dis_ret = pd.DataFrame(dis_ret, index= train8.index)
+# print(dis_ret)
+# os.chdir('D:/data-vietquant/fundamental')
+# dis_ret.to_csv('daily_return.csv')
+
 
 
